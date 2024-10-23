@@ -34,8 +34,22 @@ res.send({
 
   server.get('/gamestate',(req,res) =>{
     let id = req.query.sessionID;
-    let state= activeSessions[id];
+    console.log(id);
+    
+    let state = activeSessions[id];
     res.send({gameState: state})
+    
+   
+  })
+
+
+  server.post('/guess', (req,res) =>{
+
+    let guesses = newGame[guesses];
+    
+    
+
+
   })
   // res.send('Hello World!')
 
