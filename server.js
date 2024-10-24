@@ -36,7 +36,7 @@ res.send({
     let id = req.query.sessionID;
     console.log(id);
     
-    let state = activeSessions[id];
+    let state = activeSessions[id]; //gamestate
     res.send({gameState: state})
     
    
@@ -45,9 +45,22 @@ res.send({
 
   server.post('/guess', (req,res) =>{
 
-    let guesses = newGame[guesses];
-    
-    
+    let id = req.body.sessionID
+    let guess = req.body.guess
+    let gameState =  activeSessions[id];
+    let guessArr = guess.split("");
+    let answerArr = gameState.wordToGuess.split("");
+    for(let i =0; i<wordArr.length; i++){
+      if(guessArr[i]!=answerArr[i]){
+        //wrong
+      } else if(answerArr[i]==guessArr[i+1]){
+        //close
+      } else if(answerArr[i]==guessArr[i]){
+        //right
+      }
+
+
+    }
 
 
   })
