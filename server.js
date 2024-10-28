@@ -29,6 +29,8 @@ res.status(201)
 res.send({
   sessionID: newId
 })
+console.log(activeSessions);
+
 })
 
 
@@ -47,26 +49,47 @@ res.send({
 
     let id = req.body.sessionID
     let guess = req.body.guess
-    let gameState =  activeSessions[id];
+    let game =  activeSessions[id];
     let guessArr = guess.split("");
-    let answerArr = gameState.wordToGuess.split("");
-    for(let i =0; i<wordArr.length; i++){
-      if(guessArr[i]!=answerArr[i]){
-        //wrong
-      } else if(answerArr[i]==guessArr[i+1]){
-        //close
-      } else if(answerArr[i]==guessArr[i]){
-        //right
+    let answerArr = game.wordToGuess.split("");
+    let newGuess = [];
+    let rightLetters = [];
+    let closeLetters = [];
+    let wrongLetters = [];
+    
+
+    for(let i =0; i<guessArr.length; i++){
+      let pushRight = {
+        value: guessArr[i], result:"RIGHT",
       }
-
-
+      let pushClose = {
+        value: guessArr[i], result:"CLOSE",
+      }
+      let pushWrong = {
+        value: guessArr[i], result:"WRONG",
+      }
+      if(guessArr[i]==answerArr[i]){
+        newGuess.push(pushRight)
+      } else if(guessArr.includes(answerArr[i])){
+        newGuess.push(pushClose)
+      } else {
+        newGuess.push(pushWrong)
+      }
+        // if(newGuess[result]=="RIGHT"){
+        // rightLetters.push(newGuess)
+        // }
+      
+      
     }
-
-
+    game.guesses.push(newGuess)
+    res.send({gameState: game})
+    
+    console.log(gameState);
+    
   })
   // res.send('Hello World!')
 
-
+//  to run the server: npm run serve
 
 
 //Do not remove this line. This allows the test suite to start
