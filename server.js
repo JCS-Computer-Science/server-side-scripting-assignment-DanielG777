@@ -53,9 +53,7 @@ console.log(activeSessions);
     let guessArr = guess.split("");
     let answerArr = game.wordToGuess.split("");
     let newGuess = [];
-    let rightLetters = [];
-    let closeLetters = [];
-    let wrongLetters = [];
+   
     
 
     for(let i =0; i<guessArr.length; i++){
@@ -70,21 +68,21 @@ console.log(activeSessions);
       }
       if(guessArr[i]==answerArr[i]){
         newGuess.push(pushRight)
-      } else if(guessArr.includes(answerArr[i])){
+        game.rightLetters.push(guessArr[i])
+        
+      } else if(answerArr.includes(guessArr[i])){
         newGuess.push(pushClose)
-      } else {
+       } else {
         newGuess.push(pushWrong)
       }
-        // if(newGuess[result]=="RIGHT"){
-        // rightLetters.push(newGuess)
-        // }
-      
       
     }
     game.guesses.push(newGuess)
-    res.send({gameState: game})
+
     
-    console.log(gameState);
+    res.send({gameState: game})
+ 
+    // console.log(gameState);
     
   })
   // res.send('Hello World!')
