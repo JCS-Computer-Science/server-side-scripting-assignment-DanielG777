@@ -36,9 +36,15 @@ console.log(activeSessions);
 
   server.get('/gamestate',(req,res) =>{
     let id = req.query.sessionID;
+    if(id==undefined){
+      res.status(400).json({ error: 'No session ID is provided' });
+    }
     console.log(id);
     
     let state = activeSessions[id]; //gamestate
+    if(state==undefined){
+      res.status(404).json({ error: 'No active sessions with this ID' });
+    } 
     res.send({gameState: state})
     
    
@@ -48,15 +54,24 @@ console.log(activeSessions);
   server.post('/guess', (req,res) =>{
 
     let id = req.body.sessionID
+    if(id==undefined){
+      res.status(400).json({ error: 'No session ID is provided' });
+    }
     let guess = req.body.guess
     let game =  activeSessions[id];
     let guessArr = guess.split("");
+    if(game==undefined){
+      res.status(404).json({ error: 'No active sessions with this ID' });
+    }
+
+
+
     let answerArr = game.wordToGuess.split("");
     let newGuess = [];
-   
     
+    game.remainingGuesses= game.remainingGuesses-1;
 
-    for(let i =0; i<guessArr.length; i++){
+    for(let i = 0; i<guessArr.length; i++){
       let pushRight = {
         value: guessArr[i], result:"RIGHT",
       }
@@ -68,24 +83,33 @@ console.log(activeSessions);
       }
       if(guessArr[i]==answerArr[i]){
         newGuess.push(pushRight)
-        game.rightLetters.push(guessArr[i])
-        
+      //  if(newGuess.includes(guessArr[i])) {
+      //   game.rightLetters.push(guessArr[i])
+      //  }
+
       } else if(answerArr.includes(guessArr[i])){
         newGuess.push(pushClose)
-       } else {
+        game.closeLetters.push(guessArr[i])
+      } else {
         newGuess.push(pushWrong)
+        game.wrongLetters.push(guessArr[i])
       }
       
     }
+    if(game.remainingGuesses==0||guess==game.wordToGuess){
+      game.gameOver = true;
+    }
     game.guesses.push(newGuess)
+    res.status(201)
+    res.send({gameState: game})
 
     
-    res.send({gameState: game})
- 
-    // console.log(gameState);
     
   })
-  // res.send('Hello World!')
+  server.delete('/delete', (req,res)=>{
+    
+  })
+
 
 //  to run the server: npm run serve
 
