@@ -42,6 +42,8 @@ console.log(activeSessions);
     console.log(id);
     
     let state = activeSessions[id]; //gamestate
+    console.log(state);
+    
     if(state==undefined){
       res.status(404).json({ error: 'No active sessions with this ID' });
     } 
@@ -106,8 +108,31 @@ console.log(activeSessions);
     
     
   })
-  server.delete('/delete', (req,res)=>{
+  server.delete('/reset', (req,res)=>{
+    let id = req.query.sessionID;
+    if(id==undefined){
+      res.status(400).json({ error: 'No session ID is provided' });
+    }
     
+    let newGame = {
+      wordToGuess: "apple", 
+      guesses:[
+  
+      ],
+      wrongLetters: [],
+      closeLetters: [],
+      rightLetters: [],
+      remainingGuesses: 6,
+      gameOver: false
+  }
+ 
+  if(activeSessions[id]==undefined){
+    res.status(404).json({error: 'ID does not match any active session'})
+  }
+    activeSessions[id] = newGame;
+    res.status(200)
+    
+    res.send({gameState: activeSessions[id]})
   })
 
 
