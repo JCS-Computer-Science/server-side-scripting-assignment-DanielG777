@@ -38,18 +38,20 @@ console.log(activeSessions);
     let id = req.query.sessionID;
     if(id==undefined){
       res.status(400).json({ error: 'No session ID is provided' });
-    }
+    } else{
     console.log(id);
     
     let state = activeSessions[id]; //gamestate
     console.log(state);
-    
     if(state==undefined){
       res.status(404).json({ error: 'No active sessions with this ID' });
+    } else{
+      
+      res.send({gameState: state})
+      
     } 
-    res.send({gameState: state})
+  }
     
-   
   })
 
 
@@ -85,13 +87,14 @@ console.log(activeSessions);
       }
       if(guessArr[i]==answerArr[i]){
         newGuess.push(pushRight)
-      //  if(newGuess.includes(guessArr[i])) {
-      //   game.rightLetters.push(guessArr[i])
-      //  }
+      
 
       } else if(answerArr.includes(guessArr[i])){
         newGuess.push(pushClose)
         game.closeLetters.push(guessArr[i])
+        // if(newGuess.includes(guessArr[i])) {
+        //   game.closeLetters.push(guessArr[i])
+        //  }
       } else {
         newGuess.push(pushWrong)
         game.wrongLetters.push(guessArr[i])
@@ -112,7 +115,7 @@ console.log(activeSessions);
     let id = req.query.sessionID;
     if(id==undefined){
       res.status(400).json({ error: 'No session ID is provided' });
-    }
+    } else{
     
     let newGame = {
       wordToGuess: "apple", 
@@ -125,16 +128,32 @@ console.log(activeSessions);
       remainingGuesses: 6,
       gameOver: false
   }
- 
+
   if(activeSessions[id]==undefined){
     res.status(404).json({error: 'ID does not match any active session'})
-  }
+  } else{
     activeSessions[id] = newGame;
     res.status(200)
     
     res.send({gameState: activeSessions[id]})
+  }
+}
   })
-
+server.delete('/delete', (req,res)=>{
+let id = req.query.sessionID;
+if(id==undefined){
+  res.status(400).json({ error: 'No session ID is provided' });
+} 
+if(activeSessions[id]==undefined){
+  res.status(404).json({error: 'ID does not match any active session'})
+} else{
+  
+    activeSessions[id]==undefined
+    res.status(204)
+    res.send()
+    
+}
+})
 
 //  to run the server: npm run serve
 
