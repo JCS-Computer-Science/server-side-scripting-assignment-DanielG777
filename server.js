@@ -56,60 +56,75 @@ console.log(activeSessions);
 
 
   server.post('/guess', (req,res) =>{
-
+   
     let id = req.body.sessionID
+    let guess = req.body.guess
     if(id==undefined){
       res.status(400).json({ error: 'No session ID is provided' });
+      return
     }
-    let guess = req.body.guess
     let game =  activeSessions[id];
-    let guessArr = guess.split("");
     if(game==undefined){
       res.status(404).json({ error: 'No active sessions with this ID' });
+      return
     }
-
-
-
+    let guessArr = guess.split("");
     let answerArr = game.wordToGuess.split("");
     let newGuess = [];
-    
-    game.remainingGuesses= game.remainingGuesses-1;
+    if(guessArr.length>5){
+      res.status(400).json({ error: 'Input should not exceed 5 characters' });
+      return
 
-    for(let i = 0; i<guessArr.length; i++){
-      let pushRight = {
-        value: guessArr[i], result:"RIGHT",
-      }
-      let pushClose = {
-        value: guessArr[i], result:"CLOSE",
-      }
-      let pushWrong = {
-        value: guessArr[i], result:"WRONG",
-      }
-      if(guessArr[i]==answerArr[i]){
-        newGuess.push(pushRight)
-      
-
-      } else if(answerArr.includes(guessArr[i])){
-        newGuess.push(pushClose)
-        game.closeLetters.push(guessArr[i])
-        // if(newGuess.includes(guessArr[i])) {
-        //   game.closeLetters.push(guessArr[i])
-        //  }
-      } else {
-        newGuess.push(pushWrong)
-        game.wrongLetters.push(guessArr[i])
-      }
-      
+    }  if(guessArr.length<5){
+      res.status(400).json({ error: 'Input should not exceed less than 5 characters' });
+      return
     }
-    if(game.remainingGuesses==0||guess==game.wordToGuess){
-      game.gameOver = true;
-    }
-    game.guesses.push(newGuess)
-    res.status(201)
-    res.send({gameState: game})
+     if( !guess.match(/^[A-Za-z]+$/)){
+      res.status(400).json({ error: 'Input should only contain alphabetic characters' });
+      return
+    } 
 
+      
+      game.remainingGuesses = game.remainingGuesses-1;
+      
+      for(let i = 0; i<guessArr.length; i++){
+        let pushRight = {
+          value: guessArr[i], result:"RIGHT",
+        }
+        let pushClose = {
+          value: guessArr[i], result:"CLOSE",
+        }
+        let pushWrong = {
+          value: guessArr[i], result:"WRONG",
+        }
+        if(guessArr[i]==answerArr[i]){
+          newGuess.push(pushRight)
+          game.rightLetters.push(guessArr[i])
+          
+          
+        } else if(answerArr.includes(guessArr[i])){
+          newGuess.push(pushClose)
+          game.closeLetters.push(guessArr[i])
+          // if(newGuess.includes(guessArr[i])) {
+            //   game.closeLetters.push(guessArr[i])
+            //  }
+          } else {
+            newGuess.push(pushWrong)
+            game.wrongLetters.push(guessArr[i])
+          }
+          
+        }
+        if(game.remainingGuesses==0||guess==game.wordToGuess){
+          game.gameOver = true;
+        }
+        
+        game.guesses.push(newGuess)
+        res.status(201)
+        res.send({gameState: game})
+      
     
     
+  
   })
   server.delete('/reset', (req,res)=>{
     let id = req.query.sessionID;
@@ -118,7 +133,7 @@ console.log(activeSessions);
     } else{
     
     let newGame = {
-      wordToGuess: "apple", 
+      wordToGuess: undefined, 
       guesses:[
   
       ],
@@ -148,7 +163,7 @@ if(activeSessions[id]==undefined){
   res.status(404).json({error: 'ID does not match any active session'})
 } else{
   
-    activeSessions[id]==undefined
+    activeSessions[id]=undefined
     res.status(204)
     res.send()
     
