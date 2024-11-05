@@ -99,25 +99,42 @@ console.log(activeSessions);
         }
         if(guessArr[i]==answerArr[i]){
           newGuess.push(pushRight)
-          game.rightLetters.push(guessArr[i])
+          
+          if(!game.rightLetters.includes(guessArr[i])){
+            game.rightLetters.push(guessArr[i])
+            
+          }
+          if(game.closeLetters.includes(guessArr[i])){
+            let righIndex = game.closeLetters.indexOf(guessArr[i])
+            game.closeLetters.splice(righIndex,1)
+          }
+        }
+
+
+   
           
           
-        } else if(answerArr.includes(guessArr[i])){
+        else if(answerArr.includes(guessArr[i])){
           newGuess.push(pushClose)
-          game.closeLetters.push(guessArr[i])
-          // if(newGuess.includes(guessArr[i])) {
-            //   game.closeLetters.push(guessArr[i])
-            //  }
+          if(!game.closeLetters.includes(guessArr[i])){
+            game.closeLetters.push(guessArr[i])
+
+          }
+
           } else {
             newGuess.push(pushWrong)
-            game.wrongLetters.push(guessArr[i])
+            if(!game.wrongLetters.includes(guessArr[i])){
+              game.wrongLetters.push(guessArr[i])
+  
+            }
+            
           }
-          
-        }
+        
+        
         if(game.remainingGuesses==0||guess==game.wordToGuess){
           game.gameOver = true;
         }
-        
+      }
         game.guesses.push(newGuess)
         res.status(201)
         res.send({gameState: game})
